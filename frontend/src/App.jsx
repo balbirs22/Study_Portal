@@ -1,11 +1,33 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import AppShell from "@/components/layout/AppShell";
+import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import PageHeader from "@/components/layout/PageHeader";
+import SearchBar from "@/components/layout/SearchBar";
 
 function App() {
+  const [search, setSearch] = useState("");
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 flex-col gap-4">
-      <h1 className="text-3xl font-bold">Study Portal 🚀</h1>
-      <Button>Admin Login</Button>
-    </div>
+    <AppShell>
+      <Breadcrumbs items={[{ label: "Home" }, { label: "First Year" }]} />
+
+      <SearchBar
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <PageHeader
+        title="First Year Courses"
+        subtitle="Select a course to access study materials."
+      />
+
+      {/* later: list YearCard / CourseCard etc here */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="text-sm text-slate-500">
+          Your course cards will appear here.
+        </p>
+      </div>
+    </AppShell>
   );
 }
 
