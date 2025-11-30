@@ -46,9 +46,10 @@ function AdminDashboardPage() {
         getSubjects({}),
       ]);
 
-      const branches = branchesRes.data || branchesRes;
-      const years = yearsRes.data || yearsRes;
-      const subjects = subjectsRes.data || subjectsRes;
+      // Backend returns { count, data: [...] }
+      const branches = branchesRes.data?.data || branchesRes.data || [];
+      const years = yearsRes.data?.data || yearsRes.data || [];
+      const subjects = subjectsRes.data?.data || subjectsRes.data || [];
 
       setStats({
         branches: Array.isArray(branches) ? branches.length : 0,
@@ -84,17 +85,11 @@ function AdminDashboardPage() {
         />
 
         {loading && (
-          <Loader
-            fullPage={false}
-            label="Loading dashboard..."
-          />
+          <Loader fullPage={false} label="Loading dashboard..." />
         )}
 
         {!loading && error && (
-          <ErrorState
-            description={error}
-            onRetry={fetchStats}
-          />
+          <ErrorState description={error} onRetry={fetchStats} />
         )}
 
         {!loading && !error && (
@@ -155,20 +150,30 @@ function AdminDashboardPage() {
               </Card>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <button
                 type="button"
                 onClick={() => navigate("/admin/branches")}
-                className="w-full text-left text-xs text-slate-600 underline underline-offset-2 hover:text-slate-900"
+                className="w-full inline-flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition"
               >
-                Manage branches →
+                <span>Manage branches</span>
+                <span className="text-indigo-500">→</span>
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/admin/subjects")}
-                className="w-full text-left text-xs text-slate-600 underline underline-offset-2 hover:text-slate-900"
+                className="w-full inline-flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition"
               >
-                Manage subjects →
+                <span>Manage subjects</span>
+                <span className="text-indigo-500">→</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/admin/materials")}
+                className="w-full inline-flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition"
+              >
+                <span>Add materials</span>
+                <span className="text-indigo-500">→</span>
               </button>
             </div>
           </>

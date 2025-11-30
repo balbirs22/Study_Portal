@@ -40,8 +40,9 @@ function ManageYearsPage() {
   const [loadingList, setLoadingList] = useState(false);
   const [listError, setListError] = useState("");
 
-  const [name, setName] = useState("");
+  const [label, setLabel] = useState("");
   const [order, setOrder] = useState("");
+  const [description, setDescription] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -56,7 +57,8 @@ function ManageYearsPage() {
       setListError("");
 
       const res = await getAllYears();
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setYears(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch years:", err);
@@ -74,19 +76,25 @@ function ManageYearsPage() {
     e.preventDefault();
     setFormError("");
 
-    if (!name) {
-      setFormError("Please enter a year name.");
+    if (!label) {
+      setFormError("Please enter a year label.");
+      return;
+    }
+    if (!order) {
+      setFormError("Please enter an order.");
       return;
     }
 
     try {
       setFormLoading(true);
       await createYear({
-        name,
-        order: order ? Number(order) : undefined,
+        label,
+        order: Number(order),
+        description,
       });
-      setName("");
+      setLabel("");
       setOrder("");
+      setDescription("");
       fetchYears();
     } catch (err) {
       console.error("Failed to create year:", err);
@@ -147,32 +155,46 @@ function ManageYearsPage() {
             )}
 
             <form
-              className="grid gap-4 sm:grid-cols-3 items-end"
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-end"
               onSubmit={handleCreateYear}
             >
-              <div className="space-y-1 sm:col-span-2">
-                <Label htmlFor="year-name">Year Name</Label>
+              <div className="space-y-1">
+                <Label htmlFor="year-label">Year Label</Label>
                 <Input
-                  id="year-name"
+                  id="year-label"
                   placeholder="First Year, Second Year..."
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
                   disabled={formLoading}
                 />
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="year-order">Order (optional)</Label>
+                <Label htmlFor="year-order">Order (1-8)</Label>
                 <Input
                   id="year-order"
+                  type="number"
                   placeholder="1, 2, 3..."
+                  min="1"
+                  max="8"
                   value={order}
                   onChange={(e) => setOrder(e.target.value)}
                   disabled={formLoading}
                 />
               </div>
 
-              <div className="sm:col-span-3">
+              <div className="space-y-1">
+                <Label htmlFor="year-description">Description (optional)</Label>
+                <Input
+                  id="year-description"
+                  placeholder="Description..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  disabled={formLoading}
+                />
+              </div>
+
+              <div className="sm:col-span-2 lg:col-span-3">
                 <Button
                   type="submit"
                   className="rounded-xl bg-slate-900 hover:bg-slate-800"
@@ -225,7 +247,7 @@ function ManageYearsPage() {
                   {years.map((y) => (
                     <TableRow key={y._id || y.id}>
                       <TableCell className="font-medium">
-                        {y.name}
+                        {y.label || "Untitled"}
                       </TableCell>
                       <TableCell>{y.order ?? "-"}</TableCell>
                       <TableCell className="text-right">

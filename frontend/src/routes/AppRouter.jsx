@@ -21,7 +21,7 @@ function NotFoundPage() {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
       <h1 className="text-2xl font-semibold text-slate-900">
-        404 — Page not found
+        404 - Page not found
       </h1>
       <p className="mt-2 text-sm text-slate-500 text-center max-w-md">
         The page you&apos;re looking for doesn&apos;t exist. Check the URL or go
@@ -45,11 +45,11 @@ function AppRouter() {
       <Route path="/" element={<YearSelectionPage />} />
       <Route path="/years" element={<YearSelectionPage />} />
 
-      {/* Courses for a year (you can use query params / context inside) */}
-      <Route path="/courses" element={<YearCoursesPage />} />
+      {/* Courses for a year with yearId parameter */}
+      <Route path="/year/:yearId" element={<YearCoursesPage />} />
 
-      {/* Materials for a subject/course */}
-      <Route path="/materials" element={<CourseMaterialsPage />} />
+      {/* Materials for a subject/course with courseId parameter */}
+      <Route path="/course/:courseId" element={<CourseMaterialsPage />} />
 
       {/* ---------- Admin auth ---------- */}
       <Route path="/admin/login" element={<AdminLoginPage />} />

@@ -23,8 +23,10 @@ function YearCoursesPage() {
 
   const [search, setSearch] = useState("");
 
-  // Right now we only filter by yearId. Later you can add branchId, semester, etc.
-  const { courses, loading, error, refetch } = useCourses({ yearId });
+  // Filter courses by yearId from URL params
+  const { courses, loading, error, refetch } = useCourses({ 
+    yearId: yearId || null
+  });
 
   const filteredCourses = useMemo(() => {
     if (!search.trim()) return courses;
@@ -107,23 +109,30 @@ function YearCoursesPage() {
 
       {/* Courses list */}
       {!loading && !error && filteredCourses.length > 0 && (
-        <div className="flex flex-col gap-3 mt-2">
-          {filteredCourses.map((course, idx) => (
-            <CourseCard
-              key={course._id || course.id || idx}
-              code={course.code || `COURSE-${idx + 1}`}
-              title={course.name || course.title || "Untitled Course"}
-              fileCount={
-                course.materialCount ??
-                course.materialsCount ??
-                course.totalFiles ??
-                0
-              }
-              hasPdf={true} // later you can derive this from course metadata
-              hasVideo={true}
-              onClick={() => handleCourseClick(course)}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+          {filteredCourses.map((course, idx) => {
+            const card = (
+              <CourseCard
+                key={course._id || course.id || idx}
+                code={course.code || `COURSE-${idx + 1}`}
+                title={course.name || course.title || "Untitled Course"}
+                fileCount={
+                  course.materialCount ??
+                  course.materialsCount ??
+                  course.totalFiles ??
+                  0
+                }
+                hasPdf={true} // later you can derive this from course metadata
+                hasVideo={true}
+                onClick={() => handleCourseClick(course)}
+              />
+            );
+            return (
+              <div key={course._id || course.id || idx} className="h-full">
+                {card}
+              </div>
+            );
+          })}
         </div>
       )}
     </AppShell>

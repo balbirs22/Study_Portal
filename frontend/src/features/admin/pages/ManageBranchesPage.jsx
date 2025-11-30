@@ -57,7 +57,8 @@ function ManageBranchesPage() {
       setListError("");
 
       const res = await getAllBranches();
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setBranches(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch branches:", err);

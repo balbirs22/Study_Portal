@@ -13,43 +13,43 @@ function CourseCard({
   return (
     <Card
       onClick={onClick}
-      className="flex items-stretch justify-between rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer px-5 py-4"
+      className="flex items-stretch justify-between rounded-2xl border-0 bg-white/90 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer px-5 py-5"
     >
-      {/* Left main content */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 pr-4">
         <Badge
           variant="outline"
-          className="border-indigo-100 bg-indigo-50 text-xs font-medium text-indigo-700 w-fit px-2.5 py-1 rounded-lg"
+          className="border-indigo-100 bg-indigo-50 text-[11px] font-semibold text-indigo-700 w-fit px-3 py-1 rounded-md shadow-[0_4px_12px_rgba(79,70,229,0.08)]"
         >
           {code}
         </Badge>
 
-        <h2 className="text-base sm:text-lg font-medium text-slate-900">
+        <h2 className="text-lg sm:text-xl font-semibold text-slate-900 leading-snug">
           {title}
         </h2>
 
-        <div className="flex flex-wrap gap-4 text-xs text-slate-500 mt-1">
+        <div className="flex flex-wrap gap-4 text-sm text-slate-500 mt-1">
           {hasPdf && (
             <span className="inline-flex items-center gap-1">
-              <FileText className="h-3.5 w-3.5" />
+              <FileText className="h-4 w-4" />
               PDFs
             </span>
           )}
           {hasVideo && (
             <span className="inline-flex items-center gap-1">
-              <PlayCircle className="h-3.5 w-3.5" />
+              <PlayCircle className="h-4 w-4" />
               Videos
             </span>
           )}
         </div>
       </div>
 
-      {/* Right side: file count + arrow */}
       <div className="flex flex-col items-end justify-between ml-4">
-        <span className="text-xs text-slate-500 mb-2">
+        <span className="text-sm text-slate-500 mb-3">
           {fileCount ?? 0} files
         </span>
-        <ChevronRight className="h-4 w-4 text-slate-400" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
+          <ChevronRight className="h-4 w-4" />
+        </div>
       </div>
     </Card>
   );

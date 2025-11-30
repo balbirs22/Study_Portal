@@ -17,7 +17,7 @@ function Breadcrumbs({ items = [] }) {
   const lastIndex = items.length - 1;
 
   return (
-    <Breadcrumb className="mb-4">
+    <Breadcrumb className="mb-5 text-sm text-slate-500">
       <BreadcrumbList>
         {items.map((item, index) => {
           const isLast = index === lastIndex;

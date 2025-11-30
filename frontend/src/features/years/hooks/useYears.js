@@ -12,8 +12,8 @@ export function useYears() {
       setError(null);
 
       const res = await getAllYears();
-      // Assuming backend returns { data: [...] } or just [...]
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setYears(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch years:", err);

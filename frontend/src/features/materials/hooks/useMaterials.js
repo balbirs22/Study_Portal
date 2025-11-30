@@ -20,7 +20,8 @@ export function useMaterials(options = {}) {
       }
 
       const res = await getMaterials(options.subjectId);
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
 
       setMaterials(Array.isArray(data) ? data : []);
     } catch (err) {

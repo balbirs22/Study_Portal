@@ -24,13 +24,8 @@ function YearSelectionPage() {
 
     const q = search.toLowerCase();
     return years.filter((y) => {
-      const name =
-        y.name ||
-        y.label ||
-        y.displayName ||
-        ""; // just in case
-
-      return name.toLowerCase().includes(q);
+      const label = y.label || "";
+      return label.toLowerCase().includes(q);
     });
   }, [years, search]);
 
@@ -42,21 +37,22 @@ function YearSelectionPage() {
 
   return (
     <AppShell>
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "Home" }]} />
+      <div className="space-y-4">
+        <Breadcrumbs items={[{ label: "Home" }]} />
 
-      {/* Search bar */}
-      <SearchBar
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search years, courses, materials..."
-      />
+        <SearchBar
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search courses, materials, topics..."
+        />
 
-      {/* Page heading */}
-      <PageHeader
-        title="Select Your Year"
-        subtitle="Choose your academic year to access course materials."
-      />
+        <div className="text-center">
+          <PageHeader
+            title="Select Your Year"
+            subtitle="Choose your academic year to access course materials."
+          />
+        </div>
+      </div>
 
       {/* Loading state */}
       {loading && <Loader fullPage={false} label="Loading academic years..." />}
@@ -79,16 +75,12 @@ function YearSelectionPage() {
 
       {/* Grid of YearCards */}
       {!loading && !error && filteredYears.length > 0 && (
-        <div className="grid gap-4 sm:gap-5 md:grid-cols-2 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-2">
           {filteredYears.map((year, idx) => (
             <YearCard
               key={year._id || year.id || idx}
               index={idx}
-              title={
-                year.name ||
-                year.label ||
-                `Year ${idx + 1}`
-              }
+              title={year.label || `Year ${idx + 1}`}
               courseCount={
                 year.courseCount ??
                 year.coursesCount ??

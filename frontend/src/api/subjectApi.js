@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-// Public
+// Public - get subjects filtered by yearId, branchId, semester
 export const getSubjects = (params) =>
   axiosClient.get("/public/subjects", { params });
 

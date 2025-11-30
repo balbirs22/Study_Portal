@@ -64,7 +64,8 @@ function ManageMaterialsPage() {
   const fetchSubjectsList = async () => {
     try {
       const res = await getSubjects({});
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setSubjects(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch subjects:", err);
@@ -80,7 +81,8 @@ function ManageMaterialsPage() {
       setLoadingList(true);
       setListError("");
       const res = await getMaterials(selectedSubjectId);
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setMaterials(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch materials:", err);
@@ -198,23 +200,20 @@ function ManageMaterialsPage() {
             >
               <div className="space-y-1 sm:col-span-2">
                 <Label>Subject</Label>
-                <Select
-                  value={selectedSubjectId}
-                  onValueChange={setSelectedSubjectId}
-                  disabled={uploadLoading || subjects.length === 0}
-                >
+                <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Select subject" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subjects.map((s) => (
-                      <SelectItem
-                        key={s._id || s.id}
-                        value={s._id || s.id}
-                      >
-                        {s.code} — {s.name}
-                      </SelectItem>
-                    ))}
+                    {subjects.length > 0 ? (
+                      subjects.map((s) => (
+                        <SelectItem key={s._id || s.id} value={String(s._id || s.id)}>
+                          {s.code} — {s.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-xs text-slate-500">No subjects available</div>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

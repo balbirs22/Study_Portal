@@ -15,7 +15,8 @@ export function useCourses(options = {}) {
       setError(null);
 
       const res = await getSubjects(options);
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
 
       setCourses(Array.isArray(data) ? data : []);
     } catch (err) {

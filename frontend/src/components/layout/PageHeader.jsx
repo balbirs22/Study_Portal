@@ -7,12 +7,12 @@ function PageHeader({ title, subtitle, badge }) {
         </span>
       ) : null}
 
-      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
+      <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900">
         {title}
       </h1>
 
       {subtitle ? (
-        <p className="mt-1 text-sm text-slate-500 max-w-2xl">
+        <p className="mt-2 text-base text-slate-500 max-w-2xl">
           {subtitle}
         </p>
       ) : null}

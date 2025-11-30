@@ -10,7 +10,9 @@ function AdminLayout({ children }) {
       {/* Main admin content */}
       <div className="flex-1">
         <AdminTopbar />
-        <div className="mt-2">{children}</div>
+        <div className="mt-2 space-y-5">
+          {children}
+        </div>
       </div>
     </div>
   );

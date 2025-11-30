@@ -11,6 +11,7 @@ import EmptyState from "@/components/common/EmptyState";
 import ErrorState from "@/components/common/ErrorState";
 
 import { useMaterials } from "../hooks/useMaterials";
+import { downloadFile } from "@/lib/cloudinary";
 
 // Simple helpers (you could move to lib/utils later)
 const formatSize = (bytesOrString) => {
@@ -49,14 +50,13 @@ function CourseMaterialsPage() {
   const courseCodeFromState = location.state?.courseCode;
   const yearNameFromState = location.state?.yearName;
 
+  // courseId is the subjectId
   const { materials, loading, error, refetch } = useMaterials({
-    subjectId: courseId,
+    subjectId: courseId || null,
   });
 
-  const courseTitle =
-    courseNameFromState || "Selected Course";
-  const courseCode =
-    courseCodeFromState || "";
+  const courseTitle = courseNameFromState || "Selected Course";
+  const courseCode = courseCodeFromState || "";
 
   const breadcrumbs = useMemo(() => {
     const items = [{ label: "Home", href: "/" }];
@@ -73,9 +73,9 @@ function CourseMaterialsPage() {
   }, [courseTitle, yearNameFromState, location.state]);
 
   const handleDownload = (material) => {
-    if (!material.fileUrl) return;
-    // Simple download: open in new tab
-    window.open(material.fileUrl, "_blank", "noopener,noreferrer");
+    if (!material.rawUrl) return;
+    // Download with original filename for proper file type handling
+    downloadFile(material.rawUrl, material.fileName || material.title || "download");
   };
 
   return (
@@ -88,7 +88,7 @@ function CourseMaterialsPage() {
         title={courseTitle}
         subtitle={
           courseCode
-            ? `${courseCode} • Download notes, assignments, and resources for this course.`
+            ? `${courseCode} - Download notes, assignments, and resources for this course.`
             : "Download notes, assignments, and resources for this course."
         }
         badge={courseCode || undefined}
@@ -96,18 +96,12 @@ function CourseMaterialsPage() {
 
       {/* Loading */}
       {loading && (
-        <Loader
-          fullPage={false}
-          label="Loading course materials..."
-        />
+        <Loader fullPage={false} label="Loading course materials..." />
       )}
 
       {/* Error */}
       {!loading && error && (
-        <ErrorState
-          description={error}
-          onRetry={refetch}
-        />
+        <ErrorState description={error} onRetry={refetch} />
       )}
 
       {/* Empty */}
@@ -120,7 +114,7 @@ function CourseMaterialsPage() {
 
       {/* Materials list */}
       {!loading && !error && materials.length > 0 && (
-        <div className="flex flex-col gap-3 mt-2">
+        <div className="flex flex-col gap-4 mt-3">
           {materials.map((m) => (
             <MaterialRow
               key={m._id || m.id}
@@ -142,7 +136,7 @@ function CourseMaterialsPage() {
             onClick={() => navigate(-1)}
             className="underline underline-offset-2 hover:text-slate-700"
           >
-            ← Back to courses
+            <span className="text-sm">&lt;</span> Back to courses
           </button>
         </div>
       )}

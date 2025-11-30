@@ -33,11 +33,7 @@ import EmptyState from "@/components/common/EmptyState";
 
 import { getAllBranches } from "@/api/branchApi";
 import { getAllYears } from "@/api/yearApi";
-import {
-  getSubjects,
-  createSubject,
-  deleteSubject,
-} from "@/api/subjectApi";
+import { getSubjects, createSubject, deleteSubject } from "@/api/subjectApi";
 import { Trash2 } from "lucide-react";
 
 import AdminLayout from "@/features/admin/components/AdminLayout";
@@ -72,10 +68,48 @@ function ManageSubjectsPage() {
         getAllBranches(),
         getAllYears(),
       ]);
-      const b = branchesRes.data || branchesRes;
-      const y = yearsRes.data || yearsRes;
-      setBranches(Array.isArray(b) ? b : []);
-      setYears(Array.isArray(y) ? y : []);
+
+      // Backend returns { count, data: [...] }
+      const rawBranches = branchesRes.data?.data || branchesRes.data || [];
+      const rawYears = yearsRes.data?.data || yearsRes.data || [];
+
+      // branches: keep Mongo _id (backend expects this)
+      const b = Array.isArray(rawBranches)
+        ? rawBranches.map((br) => ({
+            id: String(br._id || br.id),
+            code: br.code,
+            name: br.name,
+          }))
+        : [];
+
+      // years: use Year _id as id, but nice label for UI
+      const y = Array.isArray(rawYears)
+        ? rawYears.map((yr) => {
+            const id = String(yr._id || yr.id);
+            const order =
+              yr.order != null
+                ? yr.order
+                : yr.value != null
+                ? yr.value
+                : yr.yearNumber != null
+                ? yr.yearNumber
+                : yr.year;
+
+            let label = yr.label;
+            if (!label) {
+              if (order === 1) label = "1st Year";
+              else if (order === 2) label = "2nd Year";
+              else if (order === 3) label = "3rd Year";
+              else if (order === 4) label = "4th Year";
+              else label = `Year ${order || ""}`.trim();
+            }
+
+            return { id, label, order };
+          })
+        : [];
+
+      setBranches(b);
+      setYears(y);
     } catch (err) {
       console.error("Failed to load branch/year metadata:", err);
     }
@@ -86,7 +120,8 @@ function ManageSubjectsPage() {
       setLoadingList(true);
       setListError("");
       const res = await getSubjects({});
-      const data = res.data || res;
+      // Backend returns { count, data: [...] }
+      const data = res.data?.data || res.data || [];
       setSubjects(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load subjects:", err);
@@ -105,8 +140,9 @@ function ManageSubjectsPage() {
     e.preventDefault();
     setFormError("");
 
-    if (!subjectName || !subjectCode || !branchId || !yearId) {
-      setFormError("Please fill in subject name, code, branch, and year.");
+    // backend requires ALL of these (see controller)
+    if (!subjectName || !subjectCode || !branchId || !yearId || !semester) {
+      setFormError("All fields are required");
       return;
     }
 
@@ -114,16 +150,20 @@ function ManageSubjectsPage() {
       setFormLoading(true);
 
       await createSubject({
+        // MUST match controller: { name, code, branchId, yearId, semester }
         name: subjectName,
         code: subjectCode,
-        branch: branchId,
-        year: yearId,
-        semester: semester || undefined,
+        branchId,
+        yearId,
+        semester,
       });
 
       setSubjectName("");
       setSubjectCode("");
       setSemester("");
+      setBranchId("");
+      setYearId("");
+
       fetchSubjectsList();
     } catch (err) {
       console.error("Failed to create subject:", err);
@@ -152,11 +192,21 @@ function ManageSubjectsPage() {
     }
   };
 
-  const getBranchName = (id) =>
-    branches.find((b) => (b._id || b.id) === id)?.name || "-";
+  const getBranchName = (branch) => {
+    if (!branch) return "-";
+    if (typeof branch === "object" && branch.name) return branch.name;
+    const found = branches.find((b) => b.id === String(branch));
+    return found?.name || "-";
+  };
 
-  const getYearName = (id) =>
-    years.find((y) => (y._id || y.id) === id)?.name || "-";
+  const getYearName = (year) => {
+    if (!year) return "-";
+    if (typeof year === "object" && (year.label || year.order)) {
+      return year.label || `Year ${year.order || ""}`;
+    }
+    const found = years.find((y) => y.id === String(year));
+    return found?.label || "-";
+  };
 
   return (
     <AppShell>
@@ -191,7 +241,7 @@ function ManageSubjectsPage() {
             )}
 
             <form
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-end"
+              className="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-3"
               onSubmit={handleCreateSubject}
             >
               <div className="space-y-1">
@@ -218,52 +268,46 @@ function ManageSubjectsPage() {
 
               <div className="space-y-1">
                 <Label>Branch</Label>
-                <Select
-                  value={branchId}
-                  onValueChange={setBranchId}
-                  disabled={formLoading || branches.length === 0}
-                >
+                <Select value={branchId} onValueChange={setBranchId}>
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Select branch" />
                   </SelectTrigger>
                   <SelectContent>
-                    {branches.map((b) => (
-                      <SelectItem
-                        key={b._id || b.id}
-                        value={b._id || b.id}
-                      >
-                        {b.code} — {b.name}
-                      </SelectItem>
-                    ))}
+                    {branches.length > 0 ? (
+                      branches.map((b) => (
+                        <SelectItem key={b.id} value={String(b.id)}>
+                          {b.code} — {b.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-xs text-slate-500">No branches available</div>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-1">
                 <Label>Year</Label>
-                <Select
-                  value={yearId}
-                  onValueChange={setYearId}
-                  disabled={formLoading || years.length === 0}
-                >
+                <Select value={yearId} onValueChange={setYearId}>
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((y) => (
-                      <SelectItem
-                        key={y._id || y.id}
-                        value={y._id || y.id}
-                      >
-                        {y.name}
-                      </SelectItem>
-                    ))}
+                    {years.length > 0 ? (
+                      years.map((y) => (
+                        <SelectItem key={y.id} value={String(y.id)}>
+                          {y.label}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-xs text-slate-500">No years available</div>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="semester">Semester (optional)</Label>
+                <Label htmlFor="semester">Semester</Label>
                 <Input
                   id="semester"
                   placeholder="1, 2, 3..."
@@ -292,10 +336,7 @@ function ManageSubjectsPage() {
         )}
 
         {!loadingList && listError && (
-          <ErrorState
-            description={listError}
-            onRetry={fetchSubjectsList}
-          />
+          <ErrorState description={listError} onRetry={fetchSubjectsList} />
         )}
 
         {!loadingList && !listError && subjects.length === 0 && (
@@ -343,7 +384,7 @@ function ManageSubjectsPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                          className="text-rose-500 hover:bg-rose-50 hover:text-rose-600"
                           onClick={() =>
                             handleDeleteSubject(s._id || s.id)
                           }
