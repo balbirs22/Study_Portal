@@ -1,20 +1,21 @@
 import Material from "../models/Material.js";
-import { uploadToCloudinary } from "../config/cloudinary.js";
-import { uploadFileLocally } from "../config/localStorage.js";
+import { storeMaterialFile } from "../config/materialStorage.js";
 import Subject from "../models/Subject.js";
 import path from "path";
 import fs from "fs";
 import uploadsDir from "../config/localStorage.js";
+import { deleteGridFsFile, streamGridFsFile } from "../config/gridFsStorage.js";
 
 export const createExternalMaterial = async (req, res) => {
   try {
-    const { title, description, subjectId, externalUrl, resourceType = "link", tags = "" } = req.body;
+    const { title, description, subjectId, externalUrl, resourceType = "link", category = "notes", tags = "" } = req.body;
     if (!title?.trim() || !subjectId || !externalUrl?.trim()) return res.status(400).json({ msg: "Title, subject and URL are required" });
     if (!["video", "drive", "link"].includes(resourceType)) return res.status(400).json({ msg: "Invalid resource type" });
+    if (!["notes", "pyq", "assignment", "other"].includes(category)) return res.status(400).json({ msg: "Invalid resource category" });
     try { new URL(externalUrl); } catch { return res.status(400).json({ msg: "Enter a valid URL" }); }
     const subjectExists = await Subject.exists({ _id: subjectId });
     if (!subjectExists) return res.status(404).json({ msg: "Subject not found" });
-    const material = await Material.create({ title: title.trim(), description: description?.trim() || "", subject: subjectId, externalUrl: externalUrl.trim(), resourceType, uploadedBy: req.user?.id, tags: String(tags).split(",").map((tag) => tag.trim()).filter(Boolean) });
+    const material = await Material.create({ title: title.trim(), description: description?.trim() || "", subject: subjectId, externalUrl: externalUrl.trim(), resourceType, category, uploadedBy: req.user?.id, tags: String(tags).split(",").map((tag) => tag.trim()).filter(Boolean) });
     await material.populate("subject", "name code");
     res.status(201).json({ msg: "Resource link added successfully", data: material });
   } catch (err) { res.status(500).json({ msg: "Error adding resource: " + err.message }); }
@@ -30,6 +31,14 @@ export const downloadMaterial = async (req, res, next) => {
 
     if (/^https?:\/\//i.test(storedUrl)) {
       return res.redirect(storedUrl);
+    }
+
+    if (storedUrl.startsWith("gridfs://")) {
+      const downloadName = path.basename(material.fileName || material.title || "download");
+      res.setHeader("Content-Type", material.fileType || "application/octet-stream");
+      res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(downloadName)}`);
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      return streamGridFsFile(storedUrl.slice("gridfs://".length), res, next);
     }
 
     const storedName = path.basename(storedUrl);
@@ -54,7 +63,7 @@ export const downloadMaterial = async (req, res, next) => {
  */
 export const uploadMaterial = async (req, res) => {
   try {
-    const { title, description, subjectId, tags } = req.body;
+    const { title, description, subjectId, category = "notes", tags } = req.body;
 
     // Validation
     if (!subjectId || !subjectId.trim()) {
@@ -71,7 +80,7 @@ export const uploadMaterial = async (req, res) => {
     let uploadResult;
     try {
       console.log(`Uploading ${originalname} to local storage...`);
-      uploadResult = await uploadFileLocally(buffer, originalname);
+      uploadResult = await storeMaterialFile(buffer, { originalname, mimetype });
       console.log("✅ Local storage upload successful");
     } catch (localError) {
       console.error("❌ Local storage upload failed:", localError);
@@ -100,6 +109,7 @@ export const uploadMaterial = async (req, res) => {
             .filter(Boolean)
         : [],
       resourceType: "file",
+      category,
     });
 
     await material.populate("subject", "name code");
@@ -120,7 +130,7 @@ export const uploadMaterial = async (req, res) => {
  */
 export const uploadMultipleMaterials = async (req, res) => {
   try {
-    const { subjectId } = req.body;
+    const { subjectId, category = "notes" } = req.body;
 
     // Validation
     if (!subjectId || !subjectId.trim()) {
@@ -143,7 +153,7 @@ export const uploadMultipleMaterials = async (req, res) => {
 
         // Use local storage only (Cloudinary disabled for now)
         console.log(`Uploading ${originalname} to local storage...`);
-        let uploadResult = await uploadFileLocally(buffer, originalname);
+        let uploadResult = await storeMaterialFile(buffer, { originalname, mimetype });
         console.log(`✅ ${originalname} uploaded successfully`);
 
         if (!uploadResult || !uploadResult.secure_url) {
@@ -162,6 +172,7 @@ export const uploadMultipleMaterials = async (req, res) => {
           fileSize: size,
           uploadedBy: req.user?.id,
           resourceType: "file",
+          category,
         });
 
         await material.populate("subject", "name code");
@@ -252,6 +263,12 @@ export const deleteMaterial = async (req, res) => {
 
     if (!material) {
       return res.status(404).json({ msg: "Material not found" });
+    }
+
+    try {
+      await deleteGridFsFile(material.rawUrl || material.fileUrl);
+    } catch (storageError) {
+      console.error("Failed to remove stored file:", storageError.message);
     }
 
     res.json({

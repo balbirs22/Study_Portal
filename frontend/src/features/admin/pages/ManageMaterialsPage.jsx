@@ -58,6 +58,7 @@ function ManageMaterialsPage() {
   const [resourceMode, setResourceMode] = useState("file");
   const [externalUrl, setExternalUrl] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("notes");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -124,11 +125,12 @@ function ManageMaterialsPage() {
 
       if (resourceMode !== "file") {
         if (!title.trim() || !externalUrl.trim()) { setUploadError("Add a title and URL for this resource."); return; }
-        await createExternalMaterial({ subjectId: selectedSubjectId, title, description, externalUrl, resourceType: resourceMode });
+        await createExternalMaterial({ subjectId: selectedSubjectId, title, description, externalUrl, resourceType: resourceMode, category });
         setTitle(""); setDescription(""); setExternalUrl(""); fetchMaterialsList(); return;
       }
       const formData = new FormData();
       formData.append("subjectId", selectedSubjectId);
+      formData.append("category", category);
       if (title) formData.append("title", title);
 
       for (let i = 0; i < files.length; i++) {
@@ -210,6 +212,16 @@ function ManageMaterialsPage() {
               <div className="space-y-1 sm:col-span-2 lg:col-span-3">
                 <Label>Resource type</Label>
                 <div className="flex flex-wrap gap-2">{[{v:"file",l:"File upload"},{v:"video",l:"Video link"},{v:"drive",l:"Drive folder"},{v:"link",l:"Web link"}].map(({v,l}) => <button type="button" key={v} onClick={() => setResourceMode(v)} className={`rounded-full px-4 py-2 text-xs font-bold ${resourceMode === v ? "bg-[#184d36] text-white" : "border border-slate-200 bg-white text-slate-600"}`}>{l}</button>)}</div>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="resource-category">Category</Label>
+                <select id="resource-category" value={category} onChange={(e) => setCategory(e.target.value)} className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm shadow-sm outline-none focus:border-emerald-400">
+                  <option value="notes">Notes</option>
+                  <option value="pyq">Previous Year Question Paper (PYQ)</option>
+                  <option value="assignment">Assignment</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
               {resourceMode === "file" ? <div className="space-y-1 sm:col-span-2">
                 <Label>Subject</Label>
@@ -332,7 +344,7 @@ function ManageMaterialsPage() {
                         <TableCell className="font-medium">
                           {m.title || m.name || "Untitled"}
                         </TableCell>
-                        <TableCell className="capitalize">{m.resourceType || m.fileType || "file"}</TableCell>
+                        <TableCell className="capitalize">{m.category || "notes"} · {m.resourceType || m.fileType || "file"}</TableCell>
                         <TableCell>
                           {m.createdAt
                             ? new Date(m.createdAt).toLocaleDateString()

@@ -91,7 +91,12 @@ function CourseMaterialsPage() {
     const mime = (m.fileType || "").toLowerCase();
     return mime.includes("video") ? "video" : "pdf";
   };
-  const visibleMaterials = materials.filter((m) => filter === "all" || materialType(m) === filter);
+  const materialCategory = (m) => m.category || "notes";
+  const visibleMaterials = materials.filter((m) => {
+    if (filter === "all") return true;
+    if (filter === "pyq" || filter === "notes" || filter === "assignment") return materialCategory(m) === filter;
+    return materialType(m) === filter;
+  });
 
   return (
     <AppShell>
@@ -130,7 +135,7 @@ function CourseMaterialsPage() {
       {/* Materials list */}
       {!loading && !error && materials.length > 0 && (
         <>
-        <div className="mb-5 flex flex-wrap gap-2">{["all", "pdf", "video", "drive", "link"].map((type) => <button key={type} onClick={() => setFilter(type)} className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${filter === type ? "bg-[#184d36] text-white" : "border border-[#dfe5de] bg-white text-slate-600 hover:border-[#184d36]"}`}>{type === "pdf" ? "Files" : type}</button>)}</div>
+        <div className="mb-5 flex flex-wrap gap-2">{["all", "notes", "pyq", "assignment", "video", "drive", "link"].map((type) => <button key={type} onClick={() => setFilter(type)} className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${filter === type ? "bg-[#184d36] text-white" : "border border-[#dfe5de] bg-white text-slate-600 hover:border-[#184d36]"}`}>{type === "pyq" ? "PYQs" : type}</button>)}</div>
         <div className="flex flex-col gap-4 mt-3">
           {visibleMaterials.map((m) => (
             <MaterialRow
@@ -140,6 +145,7 @@ function CourseMaterialsPage() {
               date={formatDate(m.createdAt || m.uploadedAt)}
               type={materialType(m)}
               description={m.description}
+              category={materialCategory(m)}
               onDownload={() => handleDownload(m)}
             />
           ))}

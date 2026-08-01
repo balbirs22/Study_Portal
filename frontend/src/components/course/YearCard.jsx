@@ -35,7 +35,7 @@ function YearCard({
         </div>
       </div>
       <div className="flex items-center gap-2 border-t border-slate-100 pt-4 text-sm font-semibold text-slate-600">
-        <BookOpen className="h-4 w-4" /><span>{courseCount ?? 0} subjects available</span>
+        <BookOpen className="h-4 w-4" /><span>{courseCount ?? 0} {(courseCount ?? 0) === 1 ? "subject" : "subjects"} available</span>
       </div>
     </Card>
   );

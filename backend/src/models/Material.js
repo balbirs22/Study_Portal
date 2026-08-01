@@ -18,6 +18,11 @@ const materialSchema = new mongoose.Schema({
     default: "file",
   },
   externalUrl: String,
+  category: {
+    type: String,
+    enum: ["notes", "pyq", "assignment", "other"],
+    default: "notes",
+  },
 }, { timestamps: true });
 
 export default mongoose.model("Material", materialSchema);

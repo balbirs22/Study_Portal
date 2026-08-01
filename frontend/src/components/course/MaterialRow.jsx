@@ -27,6 +27,7 @@ function MaterialRow({
   onDownload,
   description,
   actionLabel,
+  category,
 }) {
   const config = typeConfig[type] || {
     icon: FileText,
@@ -53,6 +54,7 @@ function MaterialRow({
                 {size && <span>{size}</span>}
                 {date && <span>{date}</span>}
                 <span className="capitalize">{type}</span>
+                {category && <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${category === "pyq" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>{category === "pyq" ? "PYQ" : category}</span>}
               </div>
             </div>
           </div>

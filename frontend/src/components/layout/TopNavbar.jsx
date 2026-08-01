@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   BookOpen,
+  Heart,
   LayoutGrid,
   ShieldCheck,
   Home,
@@ -14,9 +15,18 @@ function TopNavbar() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const browseLibrary = () => {
+    if (window.location.pathname === "/") {
+      document.getElementById("browse")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    navigate("/");
+    window.setTimeout(() => document.getElementById("browse")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+  };
+
   const navItems = [
     { label: "Home", icon: Home, action: () => navigate("/") },
-    { label: "Browse", icon: LayoutGrid, action: () => navigate("/#browse") },
+    { label: "Browse", icon: LayoutGrid, action: browseLibrary },
     { label: "Admin", icon: ShieldCheck, action: () => navigate("/admin/login") },
   ];
 
@@ -30,7 +40,7 @@ function TopNavbar() {
             </div>
             <div>
               <p className="text-lg font-black tracking-tight text-[#17201b]">StudyBase</p>
-              <p className="text-[11px] font-medium text-slate-500">Your campus knowledge library</p>
+              <p className="text-[11px] font-medium text-slate-500">Built on campus, for campus</p>
             </div>
           </div>
 
@@ -50,6 +60,10 @@ function TopNavbar() {
               );
             })}
           </nav>
+
+          <div className="hidden items-center gap-1.5 rounded-full border border-rose-100 bg-rose-50 px-3 py-1.5 text-[11px] font-black text-rose-700 lg:flex">
+            <Heart className="h-3.5 w-3.5 fill-current" /> BB × MJ
+          </div>
 
           <Button
             variant="ghost"

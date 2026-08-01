@@ -164,3 +164,16 @@ a:hover {
 
 html { scroll-behavior: smooth; }
 button, input, select { font: inherit; }
+
+.hero-grid {
+  background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+.ticker-track { animation: ticker 24s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(calc(-50% - 1rem)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
