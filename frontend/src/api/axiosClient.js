@@ -1,7 +1,8 @@
 import axios from "axios";
+import { env } from "@/lib/env";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: env.API_URL,
   withCredentials: false,
 });
 

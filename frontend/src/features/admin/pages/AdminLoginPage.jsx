@@ -11,11 +11,12 @@ import AppShell from "@/components/layout/AppShell";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageHeader from "@/components/layout/PageHeader";
 
-import { loginAdmin } from "@/api/authApi";
+import { useAdminAuthContext } from "@/context/AdminAuthContext";
 import { Lock, Mail } from "lucide-react";
 
 function AdminLoginPage() {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAdminAuthContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,11 +26,10 @@ function AdminLoginPage() {
 
   // If already logged in, redirect to dashboard
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (token) {
+    if (isAuthenticated) {
       navigate("/admin/dashboard", { replace: true });
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,18 +43,7 @@ function AdminLoginPage() {
     try {
       setLoading(true);
 
-      const res = await loginAdmin({ email, password });
-      const { token, user } = res.data || {};
-
-      if (!token) {
-        throw new Error("No token returned from server");
-      }
-
-      localStorage.setItem("adminToken", token);
-      if (user) {
-        localStorage.setItem("adminUser", JSON.stringify(user));
-      }
-
+      await login({ email, password });
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
       console.error("Admin login failed:", err);

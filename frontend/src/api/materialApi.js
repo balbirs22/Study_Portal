@@ -16,6 +16,9 @@ export const uploadMultipleMaterials = (data) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
+export const createExternalMaterial = (data) =>
+  axiosClient.post("/admin/materials/link", data);
+
 // Admin - get all materials (for management)
 export const getAllMaterials = () =>
   axiosClient.get("/admin/materials");

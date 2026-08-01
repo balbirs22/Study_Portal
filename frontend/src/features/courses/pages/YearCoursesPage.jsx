@@ -22,6 +22,8 @@ function YearCoursesPage() {
   const yearNameFromState = location.state?.yearName;
 
   const [search, setSearch] = useState("");
+  const [branch, setBranch] = useState("all");
+  const [semester, setSemester] = useState("all");
 
   // Filter courses by yearId from URL params
   const { courses, loading, error, refetch } = useCourses({ 
@@ -29,18 +31,22 @@ function YearCoursesPage() {
   });
 
   const filteredCourses = useMemo(() => {
-    if (!search.trim()) return courses;
-
     const q = search.toLowerCase();
     return courses.filter((c) => {
       const name = c.name || c.title || "";
       const code = c.code || "";
-      return (
+      const matchesSearch = !search.trim() || (
         name.toLowerCase().includes(q) ||
         code.toLowerCase().includes(q)
       );
+      const branchId = c.branch?._id || c.branch;
+      const matchesBranch = branch === "all" || String(branchId) === branch;
+      const matchesSemester = semester === "all" || String(c.semester) === semester;
+      return matchesSearch && matchesBranch && matchesSemester;
     });
-  }, [courses, search]);
+  }, [courses, search, branch, semester]);
+  const branches = useMemo(() => Array.from(new Map(courses.filter((c) => c.branch).map((c) => [String(c.branch?._id || c.branch), c.branch?.name || c.branch?.code || "Branch"]))).map(([id, name]) => ({ id, name })), [courses]);
+  const semesters = useMemo(() => [...new Set(courses.map((c) => c.semester).filter(Boolean))].sort(), [courses]);
 
   const handleCourseClick = (course) => {
     // Navigate to materials page for this course
@@ -76,6 +82,11 @@ function YearCoursesPage() {
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search courses by name or code..."
       />
+      <div className="flex flex-wrap gap-2">
+        <button onClick={() => setBranch("all")} className={`rounded-full px-4 py-2 text-xs font-bold ${branch === "all" ? "bg-[#184d36] text-white" : "border bg-white text-slate-600"}`}>All branches</button>
+        {branches.map((b) => <button key={b.id} onClick={() => setBranch(b.id)} className={`rounded-full px-4 py-2 text-xs font-bold ${branch === b.id ? "bg-[#184d36] text-white" : "border bg-white text-slate-600"}`}>{b.name}</button>)}
+        {semesters.length > 1 && <select value={semester} onChange={(e) => setSemester(e.target.value)} className="rounded-full border bg-white px-4 py-2 text-xs font-bold text-slate-600 outline-none"><option value="all">All semesters</option>{semesters.map((s) => <option key={s} value={s}>Semester {s}</option>)}</select>}
+      </div>
 
       {/* Page header */}
       <PageHeader

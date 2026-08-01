@@ -49,7 +49,12 @@ export const createYear = async (req, res) => {
 
 export const getYears = async (req, res) => {
   try {
-    const years = await Year.find().sort({ order: 1 });
+    const years = await Year.aggregate([
+      { $lookup: { from: "subjects", localField: "_id", foreignField: "year", as: "subjects" } },
+      { $addFields: { courseCount: { $size: "$subjects" } } },
+      { $project: { subjects: 0 } },
+      { $sort: { order: 1 } },
+    ]);
 
     res.json({
       count: years.length,

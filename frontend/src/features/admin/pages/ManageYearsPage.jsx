@@ -45,6 +45,7 @@ function ManageYearsPage() {
   const [description, setDescription] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -75,6 +76,7 @@ function ManageYearsPage() {
   const handleCreateYear = async (e) => {
     e.preventDefault();
     setFormError("");
+    setFormSuccess("");
 
     if (!label) {
       setFormError("Please enter a year label.");
@@ -87,15 +89,17 @@ function ManageYearsPage() {
 
     try {
       setFormLoading(true);
+      const cleanLabel = label.trim();
       await createYear({
-        label,
+        label: cleanLabel,
         order: Number(order),
         description,
       });
       setLabel("");
       setOrder("");
       setDescription("");
-      fetchYears();
+      setFormSuccess(`${cleanLabel} was added successfully.`);
+      await fetchYears();
     } catch (err) {
       console.error("Failed to create year:", err);
       const msg =
@@ -151,6 +155,11 @@ function ManageYearsPage() {
                 <AlertDescription className="text-xs">
                   {formError}
                 </AlertDescription>
+              </Alert>
+            )}
+            {formSuccess && (
+              <Alert className="mb-4 border-emerald-200 bg-emerald-50 text-emerald-800">
+                <AlertDescription className="text-xs">{formSuccess}</AlertDescription>
               </Alert>
             )}
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAdminAuthContext } from "@/context/AdminAuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Avatar,
@@ -30,22 +30,10 @@ function getInitials(nameOrEmail) {
 
 function AdminTopbar() {
   const navigate = useNavigate();
-  const [adminUser, setAdminUser] = useState(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("adminUser");
-      if (stored) {
-        setAdminUser(JSON.parse(stored));
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
+  const { adminUser, logout } = useAdminAuthContext();
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
+    logout();
     navigate("/admin/login", { replace: true });
   };
 

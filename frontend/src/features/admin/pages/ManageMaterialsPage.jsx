@@ -35,6 +35,7 @@ import { getSubjects } from "@/api/subjectApi";
 import {
   getMaterials,
   uploadMultipleMaterials,
+  createExternalMaterial,
   deleteMaterial,
 } from "@/api/materialApi";
 import { Trash2, UploadCloud } from "lucide-react";
@@ -54,6 +55,9 @@ function ManageMaterialsPage() {
   const [uploadError, setUploadError] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
   const [title, setTitle] = useState("");
+  const [resourceMode, setResourceMode] = useState("file");
+  const [externalUrl, setExternalUrl] = useState("");
+  const [description, setDescription] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -110,7 +114,7 @@ function ManageMaterialsPage() {
     }
 
     const files = fileInputRef.current?.files;
-    if (!files || files.length === 0) {
+    if (resourceMode === "file" && (!files || files.length === 0)) {
       setUploadError("Please choose at least one file to upload.");
       return;
     }
@@ -118,6 +122,11 @@ function ManageMaterialsPage() {
     try {
       setUploadLoading(true);
 
+      if (resourceMode !== "file") {
+        if (!title.trim() || !externalUrl.trim()) { setUploadError("Add a title and URL for this resource."); return; }
+        await createExternalMaterial({ subjectId: selectedSubjectId, title, description, externalUrl, resourceType: resourceMode });
+        setTitle(""); setDescription(""); setExternalUrl(""); fetchMaterialsList(); return;
+      }
       const formData = new FormData();
       formData.append("subjectId", selectedSubjectId);
       if (title) formData.append("title", title);
@@ -175,7 +184,7 @@ function ManageMaterialsPage() {
 
         <PageHeader
           title="Manage Materials"
-          subtitle="Upload and manage files for each subject."
+          subtitle="Upload files or add video lessons, Drive folders and useful links."
         />
 
         {/* Subject selection + upload form */}
@@ -198,7 +207,11 @@ function ManageMaterialsPage() {
               className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-end"
               onSubmit={handleUpload}
             >
-              <div className="space-y-1 sm:col-span-2">
+              <div className="space-y-1 sm:col-span-2 lg:col-span-3">
+                <Label>Resource type</Label>
+                <div className="flex flex-wrap gap-2">{[{v:"file",l:"File upload"},{v:"video",l:"Video link"},{v:"drive",l:"Drive folder"},{v:"link",l:"Web link"}].map(({v,l}) => <button type="button" key={v} onClick={() => setResourceMode(v)} className={`rounded-full px-4 py-2 text-xs font-bold ${resourceMode === v ? "bg-[#184d36] text-white" : "border border-slate-200 bg-white text-slate-600"}`}>{l}</button>)}</div>
+              </div>
+              {resourceMode === "file" ? <div className="space-y-1 sm:col-span-2">
                 <Label>Subject</Label>
                 <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
                   <SelectTrigger className="rounded-xl">
@@ -216,7 +229,7 @@ function ManageMaterialsPage() {
                     )}
                   </SelectContent>
                 </Select>
-              </div>
+              </div> : <><div className="space-y-1 sm:col-span-2"><Label htmlFor="external-url">Resource URL</Label><Input id="external-url" type="url" placeholder="https://…" value={externalUrl} onChange={(e) => setExternalUrl(e.target.value)} /></div><div className="space-y-1 sm:col-span-2 lg:col-span-3"><Label htmlFor="resource-description">Description (optional)</Label><Input id="resource-description" placeholder="What will students find here?" value={description} onChange={(e) => setDescription(e.target.value)} /></div></>}
 
               <div className="space-y-1">
                 <Label htmlFor="material-title">
@@ -254,7 +267,7 @@ function ManageMaterialsPage() {
                   disabled={uploadLoading}
                 >
                   <UploadCloud className="h-4 w-4" />
-                  {uploadLoading ? "Uploading..." : "Upload Materials"}
+                  {uploadLoading ? "Saving..." : resourceMode === "file" ? "Upload Materials" : "Add Resource"}
                 </Button>
               </div>
             </form>
@@ -319,7 +332,7 @@ function ManageMaterialsPage() {
                         <TableCell className="font-medium">
                           {m.title || m.name || "Untitled"}
                         </TableCell>
-                        <TableCell>{m.fileType || "-"}</TableCell>
+                        <TableCell className="capitalize">{m.resourceType || m.fileType || "file"}</TableCell>
                         <TableCell>
                           {m.createdAt
                             ? new Date(m.createdAt).toLocaleDateString()

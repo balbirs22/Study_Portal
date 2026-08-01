@@ -21,7 +21,8 @@ export const uploadFileLocally = async (fileBuffer, originalname) => {
   // Generate unique filename
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2, 8);
-  const filename = `${timestamp}-${randomString}-${originalname}`;
+  const safeName = path.basename(originalname).replace(/[^a-zA-Z0-9._-]/g, "-");
+  const filename = `${timestamp}-${randomString}-${safeName}`;
   const filepath = path.join(uploadsDir, filename);
 
   // Write file to disk

@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
+import uploadsDir from "./config/localStorage.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
@@ -37,7 +38,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(uploadsDir, { maxAge: "7d", immutable: true }));
 
 app.get("/api/health", (req, res) => {
   res.json({

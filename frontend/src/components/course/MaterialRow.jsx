@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Video, Download } from "lucide-react";
+import { FileText, Video, Download, ExternalLink, FolderOpen } from "lucide-react";
 
 const typeConfig = {
   pdf: {
@@ -15,6 +15,8 @@ const typeConfig = {
     ring: "border border-rose-100",
     iconBg: "bg-rose-100 text-rose-700",
   },
+  link: { icon: ExternalLink, bg: "bg-white", ring: "border border-slate-200", iconBg: "bg-amber-100 text-amber-700" },
+  drive: { icon: FolderOpen, bg: "bg-white", ring: "border border-slate-200", iconBg: "bg-emerald-100 text-emerald-700" },
 };
 
 function MaterialRow({
@@ -23,6 +25,8 @@ function MaterialRow({
   date,
   type = "pdf", // "pdf" | "video" | others
   onDownload,
+  description,
+  actionLabel,
 }) {
   const config = typeConfig[type] || {
     icon: FileText,
@@ -44,6 +48,7 @@ function MaterialRow({
             </div>
             <div className="flex flex-col">
               <h3 className="font-semibold text-slate-900 mb-1">{title}</h3>
+              {description && <p className="mb-2 max-w-2xl text-sm text-slate-500">{description}</p>}
               <div className="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
                 {size && <span>{size}</span>}
                 {date && <span>{date}</span>}
@@ -59,7 +64,7 @@ function MaterialRow({
           >
             <Download className="h-4 w-4 mr-2" />
             <span className="text-sm font-medium">
-              Download
+              {actionLabel || (type === "link" || type === "drive" || type === "video" ? "Open" : "Download")}
             </span>
           </Button>
         </div>

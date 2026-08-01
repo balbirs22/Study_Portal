@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, FileText, PlayCircle } from "lucide-react";
+import { ArrowUpRight, BookOpen, FileText } from "lucide-react";
 
 function CourseCard({
   code,
@@ -13,43 +13,39 @@ function CourseCard({
   return (
     <Card
       onClick={onClick}
-      className="flex items-stretch justify-between rounded-2xl border-0 bg-white/90 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer px-5 py-5"
+      className="group flex min-h-52 cursor-pointer flex-col justify-between rounded-[26px] border border-[#dfe5de] bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
     >
-      <div className="flex flex-col gap-2 pr-4">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
         <Badge
           variant="outline"
-          className="border-indigo-100 bg-indigo-50 text-[11px] font-semibold text-indigo-700 w-fit px-3 py-1 rounded-md shadow-[0_4px_12px_rgba(79,70,229,0.08)]"
+          className="w-fit rounded-full border-[#cfe1d5] bg-[#edf6f0] px-3 py-1 text-[11px] font-bold text-[#276044]"
         >
           {code}
         </Badge>
+        <ArrowUpRight className="h-5 w-5 text-slate-400 transition group-hover:text-[#184d36]" />
+        </div>
 
         <h2 className="text-lg sm:text-xl font-semibold text-slate-900 leading-snug">
           {title}
         </h2>
 
-        <div className="flex flex-wrap gap-4 text-sm text-slate-500 mt-1">
+        <div className="mt-1 flex flex-wrap gap-4 text-sm text-slate-500">
           {hasPdf && (
             <span className="inline-flex items-center gap-1">
               <FileText className="h-4 w-4" />
               PDFs
             </span>
           )}
-          {hasVideo && (
-            <span className="inline-flex items-center gap-1">
-              <PlayCircle className="h-4 w-4" />
-              Videos
-            </span>
-          )}
+          {hasVideo && <span className="inline-flex items-center gap-1"><BookOpen className="h-4 w-4" />Resources</span>}
         </div>
       </div>
 
-      <div className="flex flex-col items-end justify-between ml-4">
-        <span className="text-sm text-slate-500 mb-3">
+      <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+        <span className="text-sm font-semibold text-slate-500">
           {fileCount ?? 0} files
         </span>
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
-          <ChevronRight className="h-4 w-4" />
-        </div>
+        <span className="text-sm font-bold text-[#184d36]">Open subject →</span>
       </div>
     </Card>
   );

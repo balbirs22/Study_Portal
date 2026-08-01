@@ -12,6 +12,12 @@ const materialSchema = new mongoose.Schema({
   uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   isPublic: { type: Boolean, default: true },
   tags: [String],
+  resourceType: {
+    type: String,
+    enum: ["file", "video", "drive", "link"],
+    default: "file",
+  },
+  externalUrl: String,
 }, { timestamps: true });
 
 export default mongoose.model("Material", materialSchema);

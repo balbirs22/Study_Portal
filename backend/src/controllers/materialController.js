@@ -1,6 +1,53 @@
 import Material from "../models/Material.js";
 import { uploadToCloudinary } from "../config/cloudinary.js";
 import { uploadFileLocally } from "../config/localStorage.js";
+import Subject from "../models/Subject.js";
+import path from "path";
+import fs from "fs";
+import uploadsDir from "../config/localStorage.js";
+
+export const createExternalMaterial = async (req, res) => {
+  try {
+    const { title, description, subjectId, externalUrl, resourceType = "link", tags = "" } = req.body;
+    if (!title?.trim() || !subjectId || !externalUrl?.trim()) return res.status(400).json({ msg: "Title, subject and URL are required" });
+    if (!["video", "drive", "link"].includes(resourceType)) return res.status(400).json({ msg: "Invalid resource type" });
+    try { new URL(externalUrl); } catch { return res.status(400).json({ msg: "Enter a valid URL" }); }
+    const subjectExists = await Subject.exists({ _id: subjectId });
+    if (!subjectExists) return res.status(404).json({ msg: "Subject not found" });
+    const material = await Material.create({ title: title.trim(), description: description?.trim() || "", subject: subjectId, externalUrl: externalUrl.trim(), resourceType, uploadedBy: req.user?.id, tags: String(tags).split(",").map((tag) => tag.trim()).filter(Boolean) });
+    await material.populate("subject", "name code");
+    res.status(201).json({ msg: "Resource link added successfully", data: material });
+  } catch (err) { res.status(500).json({ msg: "Error adding resource: " + err.message }); }
+};
+
+export const downloadMaterial = async (req, res, next) => {
+  try {
+    const material = await Material.findOne({ _id: req.params.id, isPublic: true });
+    if (!material) return res.status(404).json({ msg: "Material not found" });
+
+    const storedUrl = material.rawUrl || material.fileUrl;
+    if (!storedUrl) return res.status(404).json({ msg: "No file is attached to this material" });
+
+    if (/^https?:\/\//i.test(storedUrl)) {
+      return res.redirect(storedUrl);
+    }
+
+    const storedName = path.basename(storedUrl);
+    const filePath = path.join(uploadsDir, storedName);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ msg: "The uploaded file could not be found" });
+    }
+
+    const downloadName = path.basename(material.fileName || material.title || storedName);
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    return res.download(filePath, downloadName, (error) => {
+      if (error && !res.headersSent) next(error);
+    });
+  } catch (error) {
+    if (error.name === "CastError") return res.status(400).json({ msg: "Invalid material ID" });
+    next(error);
+  }
+};
 
 /**
  * Upload a single material
@@ -52,6 +99,7 @@ export const uploadMaterial = async (req, res) => {
             .map((t) => t.trim())
             .filter(Boolean)
         : [],
+      resourceType: "file",
     });
 
     await material.populate("subject", "name code");
@@ -113,6 +161,7 @@ export const uploadMultipleMaterials = async (req, res) => {
           fileName: originalname, // Store original filename
           fileSize: size,
           uploadedBy: req.user?.id,
+          resourceType: "file",
         });
 
         await material.populate("subject", "name code");

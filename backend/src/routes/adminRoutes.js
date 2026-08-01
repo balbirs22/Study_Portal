@@ -19,6 +19,7 @@ import {
   uploadMultipleMaterials,
   getAllMaterials,
   deleteMaterial,
+  createExternalMaterial,
 } from "../controllers/materialController.js";
 
 const router = express.Router();
@@ -42,6 +43,7 @@ router.post(
   upload.single("file"),
   uploadMaterial
 );
+router.post("/materials/link", auth, isAdmin, createExternalMaterial);
 
 router.post(
   "/materials/multiple",

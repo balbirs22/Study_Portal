@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import AppShell from "@/components/layout/AppShell";
@@ -12,6 +12,7 @@ import ErrorState from "@/components/common/ErrorState";
 
 import { useMaterials } from "../hooks/useMaterials";
 import { downloadFile } from "@/lib/cloudinary";
+import { env } from "@/lib/env";
 
 // Simple helpers (you could move to lib/utils later)
 const formatSize = (bytesOrString) => {
@@ -44,6 +45,7 @@ function CourseMaterialsPage() {
   const { courseId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("all");
 
   // Data passed from YearCoursesPage (recommended)
   const courseNameFromState = location.state?.courseName;
@@ -73,10 +75,23 @@ function CourseMaterialsPage() {
   }, [courseTitle, yearNameFromState, location.state]);
 
   const handleDownload = (material) => {
-    if (!material.rawUrl) return;
-    // Download with original filename for proper file type handling
-    downloadFile(material.rawUrl, material.fileName || material.title || "download");
+    const target = material.externalUrl || material.rawUrl || material.fileUrl;
+    if (!target) return;
+    if (material.externalUrl) { window.open(target, "_blank", "noopener,noreferrer"); return; }
+    const materialId = material._id || material.id;
+    if (materialId) {
+      downloadFile(`${env.API_URL}/public/materials/${encodeURIComponent(materialId)}/download`);
+      return;
+    }
+    downloadFile(target);
   };
+
+  const materialType = (m) => {
+    if (m.resourceType && m.resourceType !== "file") return m.resourceType;
+    const mime = (m.fileType || "").toLowerCase();
+    return mime.includes("video") ? "video" : "pdf";
+  };
+  const visibleMaterials = materials.filter((m) => filter === "all" || materialType(m) === filter);
 
   return (
     <AppShell>
@@ -114,18 +129,23 @@ function CourseMaterialsPage() {
 
       {/* Materials list */}
       {!loading && !error && materials.length > 0 && (
+        <>
+        <div className="mb-5 flex flex-wrap gap-2">{["all", "pdf", "video", "drive", "link"].map((type) => <button key={type} onClick={() => setFilter(type)} className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${filter === type ? "bg-[#184d36] text-white" : "border border-[#dfe5de] bg-white text-slate-600 hover:border-[#184d36]"}`}>{type === "pdf" ? "Files" : type}</button>)}</div>
         <div className="flex flex-col gap-4 mt-3">
-          {materials.map((m) => (
+          {visibleMaterials.map((m) => (
             <MaterialRow
               key={m._id || m.id}
               title={m.title || m.name || "Untitled Material"}
               size={formatSize(m.size || m.fileSize)}
               date={formatDate(m.createdAt || m.uploadedAt)}
-              type={(m.fileType || "pdf").toLowerCase()}
+              type={materialType(m)}
+              description={m.description}
               onDownload={() => handleDownload(m)}
             />
           ))}
         </div>
+        {visibleMaterials.length === 0 && <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">No resources in this category yet.</p>}
+        </>
       )}
 
       {/* Optional: Back button at bottom */}

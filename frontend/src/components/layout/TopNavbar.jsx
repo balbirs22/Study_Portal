@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
   BookOpen,
-  Calendar,
-  FolderOpen,
+  LayoutGrid,
+  ShieldCheck,
   Home,
   Menu,
   X,
@@ -16,21 +16,21 @@ function TopNavbar() {
 
   const navItems = [
     { label: "Home", icon: Home, action: () => navigate("/") },
-    { label: "Calendar", icon: Calendar },
-    { label: "All Resources", icon: FolderOpen },
+    { label: "Browse", icon: LayoutGrid, action: () => navigate("/#browse") },
+    { label: "Admin", icon: ShieldCheck, action: () => navigate("/admin/login") },
   ];
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <header className="sticky top-0 z-50 border-b border-[#dfe5de] bg-[#f7f8f5]/90 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
+            <div className="rounded-xl bg-[#184d36] p-2.5 shadow-sm">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-xl font-bold text-slate-900">Course Portal</p>
-              <p className="text-xs text-slate-500">Your Academic Resource Hub</p>
+              <p className="text-lg font-black tracking-tight text-[#17201b]">StudyBase</p>
+              <p className="text-[11px] font-medium text-slate-500">Your campus knowledge library</p>
             </div>
           </div>
 
@@ -41,7 +41,7 @@ function TopNavbar() {
                 <button
                   key={item.label}
                   type="button"
-                  className="flex items-center space-x-2 text-slate-600 hover:text-blue-600 transition"
+                  className="flex items-center space-x-2 rounded-full px-3 py-2 text-slate-600 transition hover:bg-white hover:text-[#184d36]"
                   onClick={() => item.action?.()}
                 >
                   <Icon className="w-4 h-4" />

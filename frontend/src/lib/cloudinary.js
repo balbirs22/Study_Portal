@@ -32,32 +32,11 @@ export function getFilePublicId(url) {
  * @param {string} url - File URL (can be relative or absolute)
  * @param {string} fileName - Original filename for download
  */
-export function downloadFile(url, fileName) {
-  if (!url) {
-    console.error("No URL provided for download");
-    return;
-  }
-
-  // Convert relative URLs to absolute (for local storage files)
-  let fullUrl = url;
-  if (url.startsWith("/")) {
-    // Use the backend server URL (http://localhost:5000)
-    fullUrl = "http://localhost:5000" + url;
-  }
-
-  console.log("Downloading from:", fullUrl);
-
-  // For local storage files, directly open/download
-  if (url.startsWith("/uploads/")) {
-    // Direct download for local files
-    const link = document.createElement("a");
-    link.href = fullUrl;
-    link.download = fileName || "download";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } else {
-    // For other URLs, open in new tab (Cloudinary, etc)
-    window.open(fullUrl, "_blank");
-  }
+export function downloadFile(url) {
+  if (!url) return;
+  const link = document.createElement("a");
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
