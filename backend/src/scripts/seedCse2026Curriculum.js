@@ -42,28 +42,94 @@ const curriculum = [
   [3, 5, "UCS553", "Enterprise Web Application"],
   [3, 5, "UCS503", "Software Engineering"],
   [3, 5, "UCS510", "Computer Architecture and Organization"],
-  [3, 5, "ELECTIVE-I", "Elective I"],
-  [3, 5, "GENERIC-ELECTIVE", "Generic Elective"],
   [3, 5, "UCS421", "Ethics and Risk Mitigation in AI"],
   [3, 6, "UCS701", "Theory of Computation"],
   [3, 6, "UMA071", "Optimization Techniques"],
   [3, 6, "UCS619", "Quantum Computing"],
   [3, 6, "UTA025", "Innovation and Entrepreneurship"],
-  [3, 6, "ELECTIVE-II", "Elective II"],
-  [3, 6, "ELECTIVE-III", "Elective III"],
   [3, 6, "UCS797", "Capstone Project - Start"],
   [3, 6, "UCSXXX", "Domain Specific Applications for Engineering Graduates"],
   [4, 7, "UCS802", "Compiler Construction"],
   [4, 7, "UHU005", "Humanities for Engineers"],
   [4, 7, "UCS714", "Agentic AI"],
-  [4, 7, "ELECTIVE-IV", "Elective IV"],
   [4, 7, "UCS797", "Capstone Project"],
   [4, 8, "UCS898", "Project Semester"],
   [4, 8, "UCS813", "Social Network Analysis"],
   [4, 8, "UCS806", "Ethical Hacking"],
   [4, 8, "UCS899", "Project"],
   [4, 8, "UCS900", "Start-up Semester"],
+
+  [3, 5, "UCS531", "Cloud Computing", "Elective I"],
+  [3, 5, "UCS532", "Computer Vision", "Elective I"],
+  [3, 5, "UCS534", "Computer & Network Security", "Elective I"],
+  [3, 5, "UMC513", "Linear Algebra for Artificial Intelligence and Machine Learning", "Elective I"],
+  [3, 5, "UCS548", "Foundation of Data Science", "Elective I"],
+  [3, 5, "UCS539", "Finance, Accounting and Valuation", "Elective I"],
+  [3, 5, "UCS537", "Source Code Management", "Elective I"],
+  [3, 5, "UCS542", "UI & UX Specialist", "Elective I"],
+  [3, 5, "UCS551", "Conversational AI: Accelerated Data Science", "Elective I"],
+  [3, 5, "UCS547", "Edge AI and Robotics: Accelerated Data Science", "Elective I"],
+  [3, 5, "UCS550", "Network Defence", "Elective I"],
+  [3, 5, "UEC646", "Network and Communication for Connected Vehicles", "Elective I"],
+
+  [3, 5, "UHU016", "Introductory Course in French", "Generic Elective"],
+  [3, 5, "UHU017", "Introduction to Cognitive Science", "Generic Elective"],
+  [3, 5, "UHU018", "Introduction to Corporate Finance", "Generic Elective"],
+  [3, 5, "UCS002", "Introduction to Cyber Security", "Generic Elective"],
+  [3, 5, "UPH064", "Nanoscience and Nanomaterials", "Generic Elective"],
+  [3, 5, "UEN006", "Technologies for Sustainable Development", "Generic Elective"],
+  [3, 5, "UMA069", "Graph Theory and Applications", "Generic Elective"],
+  [3, 5, "UBT510", "Biology for Engineers", "Generic Elective"],
+  [3, 5, "UMA070", "Advanced Numerical Methods", "Generic Elective"],
+  [3, 5, "UTD004", "Campus 2 Corporate", "Generic Elective"],
+
+  [3, 6, "UCS635", "GPU Computing", "Elective II"],
+  [3, 6, "UCS636", "3D Modelling and Animation", "Elective II"],
+  [3, 6, "UCS638", "Secure Coding", "Elective II"],
+  [3, 6, "UMC622", "Matrix Computation", "Elective II"],
+  [3, 6, "UCS654", "Predictive Analytics Using Statistics", "Elective II"],
+  [3, 6, "UCS675", "Financial Markets and Portfolio Theory", "Elective II"],
+  [3, 6, "UCS659", "Build and Release Management", "Elective II"],
+  [3, 6, "UCS661", "Database Engineer", "Elective II"],
+  [3, 6, "UCS664", "Conversational AI: Natural Language Processing", "Elective II"],
+  [3, 6, "UCS668", "Edge AI and Robotics: Data Centre Vision", "Elective II"],
+  [3, 6, "UCS673", "Ethical Hacking-1", "Elective II"],
+  [3, 6, "UCS678", "Intelligent Transportation Systems", "Elective II"],
+
+  [3, 6, "UCS645", "Parallel & Distributed Computing", "Elective III"],
+  [3, 6, "UCS646", "Game Design & Development", "Elective III"],
+  [3, 6, "UCS648", "Cyber Forensics", "Elective III"],
+  [3, 6, "UMC633", "Mathematics for Quantum Computing", "Elective III"],
+  [3, 6, "UCS761", "Deep Learning", "Elective III"],
+  [3, 6, "UCS658", "Derivatives Pricing, Trading and Strategies", "Elective III"],
+  [3, 6, "UCS660", "Continuous Integration and Continuous Deployment", "Elective III"],
+  [3, 6, "UCS662", "Test Automation", "Elective III"],
+  [3, 6, "UCS749", "Conversational AI: Speech Processing & Synthesis", "Elective III"],
+  [3, 6, "UCS671", "Edge AI and Robotics: Embedded Vision", "Elective III"],
+  [3, 6, "UCS674", "Ethical Hacking-II", "Elective III"],
+  [3, 6, "UCS679", "Data Analytics in Automobile Engineering", "Elective III"],
+
+  [4, 7, "UCS751", "Simulation & Modelling", "Elective IV"],
+  [4, 7, "UCS752", "Augmented and Virtual Reality", "Elective IV"],
+  [4, 7, "UCS754", "Blockchain Technology and Applications", "Elective IV"],
+  [4, 7, "UMC744", "Cryptography and Coding Theory", "Elective IV"],
+  [4, 7, "UCS772", "Data Science: Computer Vision & NLP", "Elective IV"],
+  [4, 7, "UMC743", "Quantitative and Statistical Methods for Finance", "Elective IV"],
+  [4, 7, "UCS758", "System Provisioning and Configuration Management", "Elective IV"],
+  [4, 7, "UCS745", "Cloud & DevOps", "Elective IV"],
+  [4, 7, "UCS748", "Generative AI", "Elective IV"],
+  [4, 7, "UCS760", "Edge AI and Robotics: Reinforcement Learning & Conversational AI", "Elective IV"],
+  [4, 7, "UCS750", "Computer Hacking and Forensic Investigation", "Elective IV"],
+  [4, 7, "UCSXXX", "Cyber Security for Mobility Systems", "Elective IV"],
 ];
+
+const placeholderCodes = new Set([
+  "ELECTIVE-I",
+  "ELECTIVE-II",
+  "ELECTIVE-III",
+  "ELECTIVE-IV",
+  "GENERIC-ELECTIVE",
+]);
 
 async function request(path, options = {}) {
   const response = await fetch(`${apiUrl}${path}`, options);
@@ -96,8 +162,22 @@ const existing = new Set(
 
 let created = 0;
 let skipped = 0;
+let removed = 0;
 
-for (const [yearOrder, semester, code, name] of curriculum) {
+for (const subject of subjectsResponse.data) {
+  const belongsToCse = String(subject.branch?._id || subject.branch) === String(branch._id);
+  if (!belongsToCse || !placeholderCodes.has(subject.code)) continue;
+
+  await request(`/admin/subjects/${subject._id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${login.token}` },
+  });
+  existing.delete(`${subject.year?.order}:${subject.code}`);
+  console.log(`Removed placeholder: ${subject.code}`);
+  removed += 1;
+}
+
+for (const [yearOrder, semester, code, name, electiveGroup] of curriculum) {
   const year = yearsByOrder.get(yearOrder);
   if (!year) throw new Error(`Academic year ${yearOrder} was not found.`);
 
@@ -120,7 +200,10 @@ for (const [yearOrder, semester, code, name] of curriculum) {
       branchId: branch._id,
       yearId: year._id,
       semester,
-      description: `B.E. CSE 2026 curriculum - Semester ${semester}`,
+      description: [
+        `B.E. CSE 2026 curriculum - Semester ${semester}`,
+        electiveGroup ? `${electiveGroup} option` : null,
+      ].filter(Boolean).join(" - "),
     }),
   });
   console.log(`Created: Semester ${semester} - ${code} ${name}`);
@@ -128,4 +211,4 @@ for (const [yearOrder, semester, code, name] of curriculum) {
   created += 1;
 }
 
-console.log(`CSE 2026 curriculum ready: ${created} created, ${skipped} skipped, ${curriculum.length} total.`);
+console.log(`CSE 2026 curriculum ready: ${created} created, ${skipped} skipped, ${removed} placeholders removed, ${curriculum.length} total.`);
