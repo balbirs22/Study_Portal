@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AppShell from "@/components/layout/AppShell";
@@ -15,18 +14,6 @@ import { useYears } from "../hooks/useYears";
 function YearSelectionPage() {
   const navigate = useNavigate();
   const { years, loading, error, refetch } = useYears();
-  const [search, setSearch] = useState("");
-
-  // Filter years by search text (e.g. "First", "Second", "2024")
-  const filteredYears = useMemo(() => {
-    if (!search.trim()) return years;
-
-    const q = search.toLowerCase();
-    return years.filter((y) => {
-      const label = y.label || "";
-      return label.toLowerCase().includes(q);
-    });
-  }, [years, search]);
 
   const handleYearClick = (year) => {
     // You can navigate however your routes are designed.
@@ -44,7 +31,7 @@ function YearSelectionPage() {
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[#d9efdf]"><Sparkles className="h-3.5 w-3.5" />Made on campus, for students</div>
           <h1 className="text-4xl font-black leading-[1.02] tracking-[-.05em] sm:text-6xl lg:text-7xl">Study smarter.<br/><span className="text-[#f1be5b]">Share louder.</span></h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[#cfe2d5] sm:text-lg">Your seniors found it. Your friends shared it. We put it all in one place—notes, PYQs, videos and Drive folders that actually help.</p>
-          <PortalSearch className="mt-8 max-w-2xl" onQueryChange={setSearch} />
+          <PortalSearch className="mt-8 max-w-2xl" />
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold text-[#b8d0c0]"><span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> Student curated</span><span className="flex items-center gap-1.5"><Zap className="h-4 w-4" /> Zero clutter</span><span className="flex items-center gap-1.5"><Heart className="h-4 w-4" /> Built by BB &amp; MJ</span></div>
         </div>
       </section>
@@ -88,7 +75,7 @@ function YearSelectionPage() {
 
       <section id="browse" className="scroll-mt-28 pt-4">
         <p className="text-xs font-black uppercase tracking-[.2em] text-[#2e7753]">Browse the library</p>
-        <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h2 className="text-3xl font-black tracking-tight text-[#17201b]">Choose your academic year</h2><p className="mt-2 text-slate-500">Start here, then narrow down by branch and semester.</p></div><p className="text-sm font-semibold text-slate-500">{filteredYears.length} {filteredYears.length === 1 ? "year" : "years"} available</p></div>
+        <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h2 className="text-3xl font-black tracking-tight text-[#17201b]">Choose your academic year</h2><p className="mt-2 text-slate-500">Start here, then narrow down by branch and semester.</p></div><p className="text-sm font-semibold text-slate-500">{years.length} {years.length === 1 ? "year" : "years"} available</p></div>
       </section>
 
       {/* Loading state */}
@@ -103,7 +90,7 @@ function YearSelectionPage() {
       )}
 
       {/* Empty state */}
-      {!loading && !error && filteredYears.length === 0 && (
+      {!loading && !error && years.length === 0 && (
         <EmptyState
           title="No years available"
           description="Once academic years are added by the admin, they will appear here."
@@ -111,9 +98,9 @@ function YearSelectionPage() {
       )}
 
       {/* Grid of YearCards */}
-      {!loading && !error && filteredYears.length > 0 && (
+      {!loading && !error && years.length > 0 && (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredYears.map((year, idx) => (
+          {years.map((year, idx) => (
             <YearCard
               key={year._id || year.id || idx}
               index={idx}
