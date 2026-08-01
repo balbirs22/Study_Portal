@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, useSearchParams } from "react-router-dom";
 
 import AppShell from "@/components/layout/AppShell";
 import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageHeader from "@/components/layout/PageHeader";
-import SearchBar from "@/components/layout/SearchBar";
+import PortalSearch from "@/components/search/PortalSearch";
 
 import CourseCard from "@/components/course/CourseCard";
 import Loader from "@/components/common/Loader";
@@ -17,12 +17,13 @@ function YearCoursesPage() {
   const navigate = useNavigate();
   const { yearId } = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   // If you pass state from YearSelectionPage, e.g. navigate("/year/xyz", { state: { yearName: "First Year" }});
   const yearNameFromState = location.state?.yearName;
 
   const [search, setSearch] = useState("");
-  const [branch, setBranch] = useState("all");
+  const [branch, setBranch] = useState(() => searchParams.get("branch") || "all");
   const [semester, setSemester] = useState("all");
 
   // Filter courses by yearId from URL params
@@ -77,10 +78,10 @@ function YearCoursesPage() {
       />
 
       {/* Search bar */}
-      <SearchBar
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search courses by name or code..."
+      <PortalSearch
+        className="mx-auto mb-8 max-w-2xl"
+        onQueryChange={setSearch}
+        placeholder="Search any year, branch, subject or course code…"
       />
       <div className="flex flex-wrap gap-2">
         <button onClick={() => setBranch("all")} className={`rounded-full px-4 py-2 text-xs font-bold ${branch === "all" ? "bg-[#184d36] text-white" : "border bg-white text-slate-600"}`}>All branches</button>

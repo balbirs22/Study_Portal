@@ -40,7 +40,7 @@ function TopNavbar() {
             </div>
             <div>
               <p className="text-lg font-black tracking-tight text-[#17201b]">StudyBase</p>
-              <p className="text-[11px] font-medium text-slate-500">Built on campus, for campus</p>
+              <p className="text-[11px] font-medium text-slate-500">Built on campus, for students</p>
             </div>
           </div>
 

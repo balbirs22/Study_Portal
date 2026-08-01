@@ -19,7 +19,7 @@ function AppShell({ children }) {
               <a href="https://www.linkedin.com/in/balbirsinghbhatia/" target="_blank" rel="noreferrer" className="rounded-full border border-[#dfe5de] bg-white px-3 py-1.5 text-xs font-bold text-[#184d36] hover:border-[#184d36]">Balbir on LinkedIn ↗</a>
               <a href="https://www.linkedin.com/in/manik-jain123/" target="_blank" rel="noreferrer" className="rounded-full border border-[#dfe5de] bg-white px-3 py-1.5 text-xs font-bold text-[#184d36] hover:border-[#184d36]">Manik on LinkedIn ↗</a>
             </div>
-            <p className="mt-2 text-xs text-slate-500">Balbir × Manik · From our campus to yours.</p>
+            <p className="mt-2 text-xs text-slate-500">Balbir × Manik · Made on campus, shared with everyone.</p>
           </div>
         </div>
       </footer>

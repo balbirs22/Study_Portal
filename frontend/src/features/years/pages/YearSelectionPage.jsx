@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AppShell from "@/components/layout/AppShell";
-import { ArrowRight, BookMarked, Coffee, FolderOpen, Heart, Search, Sparkles, Users, Video, Zap } from "lucide-react";
+import { BookMarked, Coffee, FolderOpen, Heart, Sparkles, Users, Video, Zap } from "lucide-react";
+import PortalSearch from "@/components/search/PortalSearch";
 
 import YearCard from "@/components/course/YearCard";
 import Loader from "@/components/common/Loader";
@@ -40,21 +41,17 @@ function YearSelectionPage() {
         <div className="absolute -bottom-24 right-[18%] h-48 w-48 rounded-full bg-[#4f9b70]/20 blur-3xl" />
         <div className="absolute right-8 top-8 hidden rotate-6 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black uppercase tracking-widest text-[#f6d38c] backdrop-blur lg:block">No gatekeeping ✦</div>
         <div className="relative max-w-3xl">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[#d9efdf]"><Sparkles className="h-3.5 w-3.5" />Made on our campus</div>
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[#d9efdf]"><Sparkles className="h-3.5 w-3.5" />Made on campus, for students</div>
           <h1 className="text-4xl font-black leading-[1.02] tracking-[-.05em] sm:text-6xl lg:text-7xl">Study smarter.<br/><span className="text-[#f1be5b]">Share louder.</span></h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[#cfe2d5] sm:text-lg">Your seniors found it. Your friends shared it. We put it all in one place—notes, PYQs, videos and Drive folders that actually help.</p>
-          <div className="mt-8 flex max-w-2xl items-center gap-3 rounded-2xl bg-white p-2 shadow-2xl shadow-black/20">
-            <Search className="ml-3 h-5 w-5 text-slate-400" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search an academic year…" className="min-w-0 flex-1 bg-transparent px-1 py-3 text-sm text-slate-800 outline-none sm:text-base" />
-            <a href="#browse" className="hidden items-center gap-2 rounded-xl bg-[#efb54a] px-5 py-3 text-sm font-bold text-[#34230a] sm:flex">Browse library <ArrowRight className="h-4 w-4" /></a>
-          </div>
+          <PortalSearch className="mt-8 max-w-2xl" onQueryChange={setSearch} />
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold text-[#b8d0c0]"><span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> Student curated</span><span className="flex items-center gap-1.5"><Zap className="h-4 w-4" /> Zero clutter</span><span className="flex items-center gap-1.5"><Heart className="h-4 w-4" /> Built by BB &amp; MJ</span></div>
         </div>
       </section>
 
       <div className="ticker overflow-hidden rounded-2xl bg-[#efb54a] py-3 text-[#33250d]">
         <div className="ticker-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-black uppercase tracking-[.18em]">
-          {[0, 1].map((copy) => <div key={copy} className="flex items-center gap-8" aria-hidden={copy === 1}><span>Notes before noise</span><span>✦</span><span>PYQs before panic</span><span>✦</span><span>Campus made</span><span>✦</span><span>Student powered</span><span>✦</span><span>Share what you know</span><span>✦</span></div>)}
+          {[0, 1].map((copy) => <div key={copy} className="flex items-center gap-8" aria-hidden={copy === 1}><span>Notes before noise</span><span>✦</span><span>PYQs before panic</span><span>✦</span><span>Made on campus</span><span>✦</span><span>Powered by students</span><span>✦</span><span>Share what you know</span><span>✦</span></div>)}
         </div>
       </div>
 
@@ -74,6 +71,18 @@ function YearSelectionPage() {
           <Quote icon={<Coffee className="h-4 w-4" />} text="Made between lectures, deadlines and chai breaks." />
           <Quote icon={<Users className="h-4 w-4" />} text="By students who know the struggle." />
           <Quote icon={<Heart className="h-4 w-4" />} text="BB & MJ — building for our campus." />
+        </div>
+      </section>
+
+      <section aria-labelledby="campus-memes-title">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div><p className="text-xs font-black uppercase tracking-[.2em] text-[#2e7753]">Campus mood board</p><h2 id="campus-memes-title" className="mt-2 text-2xl font-black text-[#17201b]">Painfully relatable. Academically useful.</h2></div>
+          <p className="hidden text-sm font-semibold text-slate-500 sm:block">Certified by the group chat ✓</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Meme emoji="😌" setup="Professor: ‘It’s in the syllabus.’" punchline="StudyBase: Say less." tone="bg-[#e9f3ec]" />
+          <Meme emoji="🫠" setup="Exam tomorrow. 47 unread messages." punchline="One organised PYQ folder: hero entry." tone="bg-[#fff1d5]" />
+          <Meme emoji="🤝" setup="Senior uploads clean notes." punchline="Junior’s CGPA liked this post." tone="bg-[#eef0ff]" />
         </div>
       </section>
 
@@ -130,6 +139,10 @@ function Feature({ icon, title, copy }) {
 
 function Quote({ icon, text }) {
   return <div className="flex items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 text-sm font-bold text-[#294033] shadow-sm"><span className="text-[#2e7753]">{icon}</span>{text}</div>;
+}
+
+function Meme({ emoji, setup, punchline, tone }) {
+  return <article className={`${tone} rounded-[24px] border border-black/5 p-5`}><span className="text-4xl" aria-hidden="true">{emoji}</span><p className="mt-5 text-sm font-semibold text-slate-600">{setup}</p><p className="mt-2 text-lg font-black leading-snug text-[#17201b]">{punchline}</p></article>;
 }
 
 export default YearSelectionPage;
