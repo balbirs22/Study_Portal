@@ -8,3 +8,6 @@ backend/.env
 
 # Runtime uploads (existing sample files remain tracked)
 backend/uploads/*
+
+# Local Netlify folder
+.netlify
