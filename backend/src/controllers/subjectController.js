@@ -1,4 +1,5 @@
 import Subject from "../models/Subject.js";
+import Material from "../models/Material.js";
 
 export const createSubject = async (req, res) => {
   try {
@@ -82,11 +83,34 @@ export const getSubjects = async (req, res) => {
     const subjects = await Subject.find(filter)
       .populate("branch", "name code")
       .populate("year", "label order")
-      .sort({ semester: 1, name: 1 });
+      .sort({ semester: 1, name: 1 })
+      .lean();
+
+    // Course cards and the subject detail page must count the same public
+    // materials. Grouping once avoids an additional query for every subject.
+    const materialCounts = subjects.length
+      ? await Material.aggregate([
+          {
+            $match: {
+              subject: { $in: subjects.map((subject) => subject._id) },
+              isPublic: true,
+            },
+          },
+          { $group: { _id: "$subject", count: { $sum: 1 } } },
+        ])
+      : [];
+
+    const countBySubject = new Map(
+      materialCounts.map(({ _id, count }) => [String(_id), count])
+    );
+    const subjectsWithCounts = subjects.map((subject) => ({
+      ...subject,
+      materialCount: countBySubject.get(String(subject._id)) || 0,
+    }));
 
     res.json({
-      count: subjects.length,
-      data: subjects,
+      count: subjectsWithCounts.length,
+      data: subjectsWithCounts,
     });
   } catch (err) {
     console.error("getSubjects error:", err);
