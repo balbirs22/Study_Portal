@@ -99,7 +99,7 @@ function YearCoursesPage() {
       {loading && (
         <Loader
           fullPage={false}
-          label="Loading courses for this year..."
+          label="Waking StudyBase and loading courses…"
         />
       )}
 

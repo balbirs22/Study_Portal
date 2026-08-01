@@ -79,7 +79,7 @@ function YearSelectionPage() {
       </section>
 
       {/* Loading state */}
-      {loading && <Loader fullPage={false} label="Loading academic years..." />}
+      {loading && <Loader fullPage={false} label="Waking StudyBase and loading academic years… This can take up to a minute on the free server." />}
 
       {/* Error state */}
       {!loading && error && (

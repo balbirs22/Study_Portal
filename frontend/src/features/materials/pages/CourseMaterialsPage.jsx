@@ -116,7 +116,7 @@ function CourseMaterialsPage() {
 
       {/* Loading */}
       {loading && (
-        <Loader fullPage={false} label="Loading course materials..." />
+        <Loader fullPage={false} label="Waking StudyBase and loading course materials…" />
       )}
 
       {/* Error */}
